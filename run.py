@@ -11,7 +11,7 @@ train and learn word vector representations
 import json
 import sys
 import tqdm
-from frquency_based_training import *
+from frequency_based_training import *
 
 # Defining key global variables
 CORPUS_FILENAME = sys.argv[1]
