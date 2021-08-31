@@ -12,44 +12,13 @@ from sklearn.decomposition import PCA
 
 class FreqTrain():
 
-    def __init__(self, corpus) -> None:
+    def __init__(self, word2ind, ind2word, tokenized_corpus, num_words) -> None:
         super().__init__()
-        self.corpus = corpus
-        self.tokenized_corpus = []
-        self.vocabulary = set()
-        self.word2ind = {}
-        self.ind2word = {}
-        self.num_words = 0
+        self.tokenized_corpus = tokenized_corpus
+        self.word2ind = word2ind
+        self.ind2word = ind2word
+        self.num_words = num_words
         self.comat = None
-
-    def create_vocabulary(self):
-
-        print("Creating the vocabulary ...")
-
-        #obtain the corpus tokens
-        for obj in tqdm.tqdm(self.corpus):
-            reviewText = obj["reviewText"]
-            reviewText.translate(str.maketrans('', '', string.punctuation))
-            reviewTextTokens = nltk.word_tokenize(reviewText)
-            self.vocabulary.union(reviewTextTokens)
-            
-            summary = obj["summary"]
-            summary.translate(str.maketrans('', '', string.punctuation))
-            summaryTokens = nltk.word_tokenize(summary)
-            self.vocabulary.union(summaryTokens)
-
-            self.tokenized_corpus.append(reviewTextTokens)
-            self.tokenized_corpus.append(summaryTokens)
-
-
-        #populate the tally dictionaries
-        for token in tqdm.tqdm(self.vocabulary):
-            self.word2ind[token] = self.num_words
-            self.ind2word[self.num_words] = token
-            self.num_words+=1
-
-        print("Total size of vocabulary =", self.num_words + 1)
-
 
     def generate_comatrix(self, window_size):
 
