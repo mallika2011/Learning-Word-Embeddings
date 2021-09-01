@@ -38,7 +38,7 @@ class Vocab():
                     self.vocabulary_counts[token] = 0
                 self.vocabulary_counts[token] += 1
 
-            self.vocabulary = self.vocabulary.union(textTokens)
+            self.vocabulary = self.vocabulary.union(reviewTextTokens)
 
 
 
