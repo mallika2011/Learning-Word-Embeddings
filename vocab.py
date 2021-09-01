@@ -8,6 +8,8 @@ import string
 import tqdm
 import json
 import pickle
+import threading
+
 
 class Vocab():
 
@@ -19,28 +21,33 @@ class Vocab():
         self.word2ind = {}
         self.ind2word = {}
         self.num_words = 0
+        self.lock = threading.Lock()
+
+    def tokenize(self, text):
+        text = text.translate(str.maketrans('', '', string.punctuation)).lower()
+        textTokens = nltk.word_tokenize(text)
+
+        self.lock.acquire()
+        self.vocabulary = self.vocabulary.union(textTokens)
+        self.tokenized_corpus.append(textTokens)
+        self.lock.release()
     
     def create_vocabulary(self):
 
         print("Creating the vocabulary ...")
-
+    
+        thread_list = []
         #obtain the corpus tokens
         for obj in tqdm.tqdm(self.corpus):
             reviewText = obj["reviewText"]
-            reviewText = reviewText.translate(str.maketrans('', '', string.punctuation))
-            reviewTextTokens = nltk.word_tokenize(reviewText)
-            reviewTextTokens = [x.lower() for x in reviewTextTokens]
-            self.vocabulary = self.vocabulary.union(reviewTextTokens)
+            thread = threading.Thread(target=self.tokenize, args=(reviewText,))
+            thread_list.append(thread)
+            thread.start()
             
-            summary = obj["summary"]
-            summary = summary.translate(str.maketrans('', '', string.punctuation))
-            summaryTokens = nltk.word_tokenize(summary)
-            summaryTokens = [x.lower() for x in summaryTokens]
-            self.vocabulary = self.vocabulary.union(summaryTokens)
 
-            self.tokenized_corpus.append(reviewTextTokens)
-            self.tokenized_corpus.append(summaryTokens)
-
+        print("Collecting threads...")
+        for thread in tqdm.tqdm(thread_list):
+            thread.join()
 
         #populate the tally dictionaries
         for token in tqdm.tqdm(self.vocabulary):
