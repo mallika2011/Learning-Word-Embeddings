@@ -8,8 +8,6 @@ import string
 import tqdm
 import json
 import pickle
-import threading
-import multiprocessing
 
 
 class Vocab():
@@ -22,46 +20,27 @@ class Vocab():
         self.word2ind = {}
         self.ind2word = {}
         self.num_words = 0
-        self.lock = threading.Lock()
+   
+ 
+    def create_vocabulary(self):
 
-    def tokenize(self, texts):
+        print("Creating the vocabulary ...")
+    
+        #obtain the corpus tokens
+        for i, obj in tqdm.tqdm(enumerate(self.corpus)):
 
-        print("Process running ... ")
-        for text in tqdm.tqdm(texts):
-            text = text.translate(str.maketrans('', '', string.punctuation)).lower()
-            textTokens = nltk.word_tokenize(text)
-            
-            self.lock.acquire()
-            for token in textTokens:
+            reviewText = obj["reviewText"]
+            reviewText = reviewText.translate(str.maketrans('', '', string.punctuation)).lower()           
+            reviewTextTokens = nltk.word_tokenize(reviewText)
+
+            for token in reviewTextTokens:
                 if token not in self.vocabulary_counts:
                     self.vocabulary_counts[token] = 0
                 self.vocabulary_counts[token] += 1
 
             self.vocabulary = self.vocabulary.union(textTokens)
-            self.lock.release()
-    
-    def create_vocabulary(self):
 
-        print("Creating the vocabulary ...")
-    
-        thread_list = []
-        text_list = []
-        #obtain the corpus tokens
-        for i, obj in tqdm.tqdm(enumerate(self.corpus)):
 
-            reviewText = obj["reviewText"]
-            text_list.append(reviewText)
-
-            if (i+1)%100000 == 0:
-                thread = multiprocessing.Process(target=self.tokenize, args=(text_list,))
-                thread_list.append(thread)
-                thread.start()
-                text_list.clear()
-            
-
-        print("Collecting threads...")
-        for thread in tqdm.tqdm(thread_list):
-            thread.join()
 
         #omit the words with less than 5 freqency
         for key, value in self.vocabulary_counts.items():
