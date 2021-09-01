@@ -12,9 +12,9 @@ from sklearn.decomposition import PCA
 
 class FreqTrain():
 
-    def __init__(self, word2ind, ind2word, tokenized_corpus, num_words) -> None:
+    def __init__(self, corpus, word2ind, ind2word, num_words) -> None:
         super().__init__()
-        self.tokenized_corpus = tokenized_corpus
+        self.corpus = corpus
         self.word2ind = word2ind
         self.ind2word = ind2word
         self.num_words = num_words
@@ -26,7 +26,10 @@ class FreqTrain():
 
         self.comat = np.zeros((self.num_words+1, self.num_words+1))
 
-        for sentence in tqdm.tqdm(self.tokenized_corpus):
+        for obj in tqdm.tqdm(self.corpus):
+            sentence = obj["reviewText"].translate(str.maketrans('', '', string.punctuation)).lower()
+            sentence = nltk.word_tokenize(sentence)
+            
             for i, word in enumerate(sentence):
                 for j in range(max(0,i-window_size), min(len(sentence), i+window_size+1)):
 
@@ -35,6 +38,7 @@ class FreqTrain():
 
                     self.comat[self.word2ind[word]][self.word2ind[sentence[j]]] += 1
 
+        np.save('cooccurrence_matrix', np.array(self.comat))
         return self.comat
 
 
