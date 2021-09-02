@@ -6,9 +6,11 @@ by constructing a co-occurence matrix from the given corpus.
 import nltk 
 import numpy as np
 import string
+from scipy import sparse
 import tqdm
 from sklearn.decomposition import TruncatedSVD
 from sklearn.decomposition import PCA
+from scipy.sparse import csr_matrix
 
 class FreqTrain():
 
@@ -23,20 +25,43 @@ class FreqTrain():
     def generate_comatrix(self, window_size):
 
         print("Generating Co-occurrence Matrix ...")
-
-        self.comat = np.zeros((self.num_words+1, self.num_words+1))
+        sparse_comat = {}
 
         for obj in tqdm.tqdm(self.corpus):
             sentence = obj["reviewText"].translate(str.maketrans('', '', string.punctuation)).lower()
             sentence = nltk.word_tokenize(sentence)
             
             for i, word in enumerate(sentence):
+                
+                if word not in self.word2ind: #skip words that occur less than 5 times
+                    continue
+                
                 for j in range(max(0,i-window_size), min(len(sentence), i+window_size+1)):
 
                     if i == j: #ignoring the word itself
                         continue
 
-                    self.comat[self.word2ind[word]][self.word2ind[sentence[j]]] += 1
+                    if sentence[j] not in self.word2ind: #skip words that occur less than 5 times
+                        continue
+                    
+                    row = self.word2ind[word]
+                    col = self.word2ind[sentence[j]]
+
+                    if (row,col) not in sparse_comat:
+                        sparse_comat[(row,col)] = 0
+                    sparse_comat[(row,col)]+=1
+
+        self.comat = csr_matrix(
+            (
+                list(sparse_comat.values()), 
+                (
+                    [tup[0] for tup in list(sparse_comat.keys())], 
+                    [tup[1] for tup in list(sparse_comat.keys())], 
+                )
+            ),
+            shape = (self.num_words, self.num_words)
+        )
+
 
         np.save('cooccurrence_matrix', np.array(self.comat))
         return self.comat
