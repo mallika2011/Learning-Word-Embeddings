@@ -27,7 +27,7 @@ class Vocab():
         print("Creating the vocabulary ...")
     
         #obtain the corpus tokens
-        for i, obj in tqdm.tqdm(enumerate(self.corpus)):
+        for i, obj in tqdm.tqdm(enumerate(self.corpus), total=len(self.corpus)):
 
             reviewText = obj["reviewText"]
             reviewText = reviewText.translate(str.maketrans('', '', string.punctuation)).lower()           
@@ -48,7 +48,7 @@ class Vocab():
                 self.vocabulary.discard(key)
 
         #populate the tally dictionaries
-        for token in tqdm.tqdm(self.vocabulary):
+        for token in tqdm.tqdm(self.vocabulary, total=len(self.vocabulary)):
             self.word2ind[token] = self.num_words
             self.ind2word[self.num_words] = token
             self.num_words+=1
