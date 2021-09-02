@@ -25,6 +25,11 @@ def load_corpus():
     #load and prepare the corpus (1689188 objects)
     with open(CORPUS_FILENAME, 'r') as f:
         for i, line in enumerate(tqdm.tqdm(f)):
+
+            #consider first 500K reviews - due to computation limitations
+            if i >= 500000:
+                break
+            
             obj = json.loads(line)
             CORPUS.append({
                 'reviewText': obj['reviewText'],
