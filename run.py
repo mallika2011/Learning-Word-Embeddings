@@ -27,7 +27,7 @@ def load_corpus():
         for i, line in enumerate(tqdm.tqdm(f)):
 
             #consider first 500K reviews - due to computation limitations
-            if i >= 500000:
+            if i >= 1000000:
                 break
             
             obj = json.loads(line)
@@ -63,8 +63,8 @@ if __name__=='__main__':
 
         load_corpus()
         #train word vectors using the frequency based co-occurence matrix
-        window_size = 3
-        vector_dim = 10 
+        window_size = 5
+        vector_dim = 50 
 
         word2ind, ind2word, vocabulary = load_vocabulary()
         freq_train = FreqTrain(CORPUS, word2ind, ind2word, len(vocabulary))
