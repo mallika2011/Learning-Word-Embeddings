@@ -11,6 +11,8 @@ import tqdm
 from sklearn.decomposition import TruncatedSVD
 from sklearn.decomposition import PCA
 from scipy.sparse import csr_matrix
+from gensim.parsing.preprocessing import strip_punctuation
+import re
 
 class FreqTrain():
 
@@ -28,7 +30,10 @@ class FreqTrain():
         sparse_comat = {}
 
         for obj in tqdm.tqdm(self.corpus):
-            sentence = obj["reviewText"].translate(str.maketrans('', '', string.punctuation)).lower()
+            sentence = obj["reviewText"].translate(str.maketrans(string.punctuation, ' '*len(string.punctuation))).lower()
+            #sentence = obj["reviewText"].translate(str.maketrans('', '', string.punctuation)).lower()
+            #sentence = re.sub(rf"[{string.punctuation}]", " ", obj["reviewText"]).lower()
+            #sentence = strip_punctuation(obj["reviewText"]).lower()
             sentence = nltk.word_tokenize(sentence)
             
             for i, word in enumerate(sentence):

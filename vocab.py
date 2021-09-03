@@ -9,6 +9,7 @@ import tqdm
 import json
 import pickle
 import re
+from gensim.parsing.preprocessing import strip_punctuation
 
 
 class Vocab():
@@ -31,8 +32,10 @@ class Vocab():
         for i, obj in tqdm.tqdm(enumerate(self.corpus), total=len(self.corpus)):
 
             reviewText = obj["reviewText"]
+            reviewText = reviewText.translate(str.maketrans(string.punctuation, ' '*len(string.punctuation))).lower() 
             #reviewText = reviewText.translate(str.maketrans('', '', string.punctuation)).lower()           
-            reviewText = re.sub(rf"[{string.punctuation}]", " ", reviewText).lower()
+            #reviewText = re.sub(rf"[{string.punctuation}]", " ", reviewText).lower()
+            #reviewText = strip_punctuation(reviewText).lower()
             reviewTextTokens = nltk.word_tokenize(reviewText)
 
             for token in reviewTextTokens:
@@ -43,10 +46,13 @@ class Vocab():
             self.vocabulary = self.vocabulary.union(reviewTextTokens)
 
 
+        #save the vocabulary counts for subsampling while training later
+        with open('vocab_files/word2count.json', 'w') as fp:
+            json.dump(self.vocabulary_counts, fp)
 
         #omit the words with less than 5 freqency
         for key, value in self.vocabulary_counts.items():
-            if value < 5:
+            if value <= 5:
                 self.vocabulary.discard(key)
 
         #populate the tally dictionaries

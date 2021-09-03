@@ -27,8 +27,8 @@ def load_corpus():
         for i, line in enumerate(tqdm.tqdm(f)):
 
             #consider first 500K reviews - due to computation limitations
-            if i >= 1000000:
-                break
+            #if i >= 1000000:
+            #    break
             
             obj = json.loads(line)
             CORPUS.append({
