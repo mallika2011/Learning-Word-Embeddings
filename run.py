@@ -21,27 +21,34 @@ import numpy as np
 CORPUS_FILENAME = sys.argv[1]
 CORPUS = []
 RUN_TYPE = sys.argv[2] #0:create vocabulary, 1: frequency based, 2: prediction based
-global word2ind
-global ind2word
-global word2count
-global vocabulary
+word2ind = {}
+ind2word = {}
+word2count = {}
+vocabulary = set()
+TOTAL_CORPUS_WORDS = 0
 
 def get_sampling_proability(word):
 
+    global TOTAL_CORPUS_WORDS
     t = 1e-5 #heuristcally chosen parameter from the original paper by Mikolov et. al 
-
-    total_corpus_words = sum(word2count.values())
     word_count = word2count[word]
-    f = word_count/total_corpus_words
+    f = word_count/TOTAL_CORPUS_WORDS
     prob = 1 - np.sqrt(t/f)
 
-    return random.random() < prob
+    #return random.random() < prob
+    return np.random.rand() < prob
     
 
-def tokenize_corpus(word2count, subsample):
+def tokenize_corpus(subsample):
 
     tokenized_corpus = []
-    print("Tokenizing Corpus ...")
+    global TOTAL_CORPUS_WORDS 
+    global word2ind
+    global word2count
+    TOTAL_CORPUS_WORDS = sum(word2count.values())
+
+    print("Total corpus words = ", TOTAL_CORPUS_WORDS)
+    print("Tokenizing Corpus with subsample=", subsample, "...")
 
     for obj in tqdm.tqdm(CORPUS):
 
@@ -52,6 +59,8 @@ def tokenize_corpus(word2count, subsample):
 
         if subsample:
             for word in sentence:
+                if word not in word2ind: #skipping words that are not in the vocabulary (either < 5 occurence, or UNK)
+                    continue
                 if not get_sampling_proability(word):
                     tokenized_sentence.append(word)
 
@@ -112,12 +121,12 @@ if __name__=='__main__':
 
         load_corpus()
         word2ind, ind2word, word2count, vocabulary = load_vocabulary()
-        tokenized_corpus = tokenize_corpus(word2count, subsample=True)
+        tokenized_corpus = tokenize_corpus(subsample=True)
 
         #train word vectors using the frequency based co-occurence matrix
         window_size = 5
         vector_dim = 50 
-        
+
         freq_train = FreqTrain(tokenized_corpus, word2ind, ind2word, len(vocabulary))
         _ = freq_train.generate_comatrix(window_size)
         freq_vectors = freq_train.perform_svd(vector_dim)
