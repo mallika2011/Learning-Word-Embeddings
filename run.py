@@ -21,6 +21,10 @@ import numpy as np
 CORPUS_FILENAME = sys.argv[1]
 CORPUS = []
 RUN_TYPE = sys.argv[2] #0:create vocabulary, 1: frequency based, 2: prediction based
+global word2ind
+global ind2word
+global word2count
+global vocabulary
 
 def get_sampling_proability(word):
 
@@ -43,7 +47,7 @@ def tokenize_corpus(subsample):
         tokenized_sentence = []
         reviewText = obj["reviewText"]
         reviewText = reviewText.translate(str.maketrans(string.punctuation, ' '*len(string.punctuation))).lower()
-        sentence = nltk.word_tokenize(sentence)
+        sentence = nltk.word_tokenize(reviewText)
 
         if subsample:
             for word in sentence:
@@ -77,6 +81,10 @@ def load_corpus():
     print("Total number of reviews = ", len(CORPUS))
 
 def load_vocabulary():
+    global word2ind
+    global ind2word
+    global word2count
+    global vocabulary
     with open('vocab_files/word2ind.json', 'r') as fp:
         word2ind = json.load(fp)
     with open('vocab_files/ind2word.json', 'r') as fp:
