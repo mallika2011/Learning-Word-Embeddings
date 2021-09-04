@@ -7,4 +7,4 @@
 #SBATCH --time=3-00:00:00
 
 
-python3 run.py Electronics_5.json 0
+python3 run.py Electronics_5.json 1

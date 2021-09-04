@@ -34,13 +34,14 @@ def get_sampling_proability(word):
     word_count = word2count[word]
     f = word_count/TOTAL_CORPUS_WORDS
     prob = 1 - np.sqrt(t/f)
-
+    
     #return random.random() < prob
     return np.random.rand() < prob
     
 
 def tokenize_corpus(subsample):
 
+    discarded_reviews = 0
     tokenized_corpus = []
     global TOTAL_CORPUS_WORDS 
     global word2ind
@@ -50,7 +51,7 @@ def tokenize_corpus(subsample):
     print("Total corpus words = ", TOTAL_CORPUS_WORDS)
     print("Tokenizing Corpus with subsample=", subsample, "...")
 
-    for obj in tqdm.tqdm(CORPUS):
+    for i, obj in tqdm.tqdm(enumerate(CORPUS)):
 
         tokenized_sentence = []
         reviewText = obj["reviewText"]
@@ -69,6 +70,11 @@ def tokenize_corpus(subsample):
         
         if tokenized_sentence:
             tokenized_corpus.append(tokenized_sentence)
+        else:
+            discarded_reviews += 1
+
+
+    print("Number of Discarded reviews after subsampling = ", discarded_reviews)
 
     return tokenized_corpus
 
