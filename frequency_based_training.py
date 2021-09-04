@@ -11,12 +11,14 @@ import tqdm
 from sklearn.decomposition import TruncatedSVD
 from sklearn.decomposition import PCA
 from scipy.sparse import csr_matrix
+from gensim.parsing.preprocessing import strip_punctuation
+import re
 
 class FreqTrain():
 
-    def __init__(self, corpus, word2ind, ind2word, num_words) -> None:
+    def __init__(self, tokenized_corpus, word2ind, ind2word, num_words) -> None:
         super().__init__()
-        self.corpus = corpus
+        self.tokenized_corpus = tokenized_corpus
         self.word2ind = word2ind
         self.ind2word = ind2word
         self.num_words = num_words
@@ -27,9 +29,7 @@ class FreqTrain():
         print("Generating Co-occurrence Matrix ...")
         sparse_comat = {}
 
-        for obj in tqdm.tqdm(self.corpus):
-            sentence = obj["reviewText"].translate(str.maketrans('', '', string.punctuation)).lower()
-            sentence = nltk.word_tokenize(sentence)
+        for sentence in tqdm.tqdm(self.tokenized_corpus):
             
             for i, word in enumerate(sentence):
                 
