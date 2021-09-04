@@ -63,7 +63,7 @@ class FreqTrain():
         )
 
 
-        np.save('cooccurrence_matrix', np.array(self.comat))
+        np.save('models/cooccurrence_matrix', np.array(self.comat))
         return self.comat
 
 

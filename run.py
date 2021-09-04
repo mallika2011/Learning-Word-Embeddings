@@ -127,7 +127,7 @@ if __name__=='__main__':
 
         load_corpus()
         word2ind, ind2word, word2count, vocabulary = load_vocabulary()
-        tokenized_corpus = tokenize_corpus(subsample=True)
+        tokenized_corpus = tokenize_corpus(subsample=False)
 
         #train word vectors using the frequency based co-occurence matrix
         window_size = 5
@@ -136,7 +136,7 @@ if __name__=='__main__':
         freq_train = FreqTrain(tokenized_corpus, word2ind, ind2word, len(vocabulary))
         _ = freq_train.generate_comatrix(window_size)
         freq_vectors = freq_train.perform_svd(vector_dim)
-        np.save('freq_word_vectors', np.array(freq_vectors))
+        np.save('./embeddings/freq_word_vectors', np.array(freq_vectors))
 
     elif RUN_TYPE == "2":
         print("Not implemented yet ...")
