@@ -21,6 +21,10 @@ import numpy as np
 CORPUS_FILENAME = sys.argv[1]
 CORPUS = []
 RUN_TYPE = sys.argv[2] #0:create vocabulary, 1: frequency based, 2: prediction based
+global word2ind
+global ind2word
+global word2count
+global vocabulary
 
 def get_sampling_proability(word):
 
@@ -37,6 +41,7 @@ def get_sampling_proability(word):
 def tokenize_corpus(word2count, subsample):
 
     tokenized_corpus = []
+    print("Tokenizing Corpus ...")
 
     for obj in tqdm.tqdm(CORPUS):
 
@@ -77,6 +82,10 @@ def load_corpus():
     print("Total number of reviews = ", len(CORPUS))
 
 def load_vocabulary():
+    global word2ind
+    global ind2word
+    global word2count
+    global vocabulary
     with open('vocab_files/word2ind.json', 'r') as fp:
         word2ind = json.load(fp)
     with open('vocab_files/ind2word.json', 'r') as fp:
