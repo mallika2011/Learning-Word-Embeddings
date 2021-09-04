@@ -41,6 +41,7 @@ def get_sampling_proability(word):
 def tokenize_corpus(subsample):
 
     tokenized_corpus = []
+    print("Tokenizing Corpus ...")
 
     for obj in tqdm.tqdm(CORPUS):
 
