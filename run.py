@@ -43,7 +43,7 @@ def tokenize_corpus(subsample):
         tokenized_sentence = []
         reviewText = obj["reviewText"]
         reviewText = reviewText.translate(str.maketrans(string.punctuation, ' '*len(string.punctuation))).lower()
-        sentence = nltk.word_tokenize(sentence)
+        sentence = nltk.word_tokenize(reviewText)
 
         if subsample:
             for word in sentence:
