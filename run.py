@@ -34,7 +34,7 @@ def get_sampling_proability(word):
     return random.random() < prob
     
 
-def tokenize_corpus(subsample):
+def tokenize_corpus(word2count, subsample):
 
     tokenized_corpus = []
 
@@ -43,7 +43,7 @@ def tokenize_corpus(subsample):
         tokenized_sentence = []
         reviewText = obj["reviewText"]
         reviewText = reviewText.translate(str.maketrans(string.punctuation, ' '*len(string.punctuation))).lower()
-        sentence = nltk.word_tokenize(sentence)
+        sentence = nltk.word_tokenize(reviewText)
 
         if subsample:
             for word in sentence:
@@ -102,12 +102,13 @@ if __name__=='__main__':
     elif RUN_TYPE == "1":
 
         load_corpus()
-        tokenized_corpus = tokenize_corpus(subsample=True)
+        word2ind, ind2word, word2count, vocabulary = load_vocabulary()
+        tokenized_corpus = tokenize_corpus(word2count, subsample=True)
+
         #train word vectors using the frequency based co-occurence matrix
         window_size = 5
         vector_dim = 50 
-
-        word2ind, ind2word, word2count, vocabulary = load_vocabulary()
+        
         freq_train = FreqTrain(tokenized_corpus, word2ind, ind2word, len(vocabulary))
         _ = freq_train.generate_comatrix(window_size)
         freq_vectors = freq_train.perform_svd(vector_dim)
