@@ -91,8 +91,8 @@ class PredTrain():
                 # one_hot_context_vectors = self.generate_one_hot_vectors(context)
                 # one_hot_center_vector = self.generate_one_hot_vectors([center_word])
                 self.context_center_data.append((
-                    torch.tensor(context, dtype=torch.int64),
-                    torch.tensor([self.word2ind[center_word]], dtype=torch.int64)
+                    context,
+                    [self.word2ind[center_word]]
                     ))          
 
     
@@ -120,8 +120,8 @@ class PredTrain():
 
             for context_vectors, center_vector in tqdm.tqdm(self.context_center_data):
 
-                context_vectors = context_vectors.to(device)
-                center_vector = center_vector.to(device)
+                context_vectors = torch.tensor(context_vectors, dtype=torch.int64).to(device)
+                center_vector = torch.tensor(center_vector, dtype=torch.int64).to(device)
 
                 outputs = model(context_vectors)
                 loss = loss_function(outputs, center_vector)
