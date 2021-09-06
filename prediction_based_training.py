@@ -4,6 +4,7 @@ by using the Continuous Bag of Words (CBOW) model
 '''
 
 from numpy.core.defchararray import center
+from torch._C import device
 from vocab import Vocab
 import nltk 
 import numpy as np
@@ -132,13 +133,13 @@ class PredTrain():
 
         torch.save(model.embedding, embedding_file_path)
 
-        print("Quick Testing")
+        print("\n----------------------------------------\nQuick Testing")
         context = ['The','new','is', 'great']
         context_vector = torch.tensor([self.word2ind[word.lower()] for word in context], dtype=torch.int64).view(1, -1)
         a = model(context_vector)
 
         #Print result
-        print(f'Context: {context}\n')
+        print(f'Context: {context}')
         print(f'Prediction: {self.ind2word[str(torch.argmax(a[0]).item())]}')
 
 
