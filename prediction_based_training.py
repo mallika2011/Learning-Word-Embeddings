@@ -33,18 +33,18 @@ class CBOW(torch.nn.Module):
     def forward(self, context_words):
 
         #print("context words size ", context_words.size())
-        embedded_context_words = self.embedding(context_words)  # (batch_size, context_size x embedding_size), 
+        embedded_context_words = self.embedding(context_words)  # (context_size, batch_size, embedding_size), 
         #print("embedded words size", embedded_context_words.size())
-        output1 = self.W1(embedded_context_words)               # (batch_size, context_size X hidden_layer)
+        output1 = self.W1(embedded_context_words)               # (context_size, batch_size, hidden_layer)
         #print("outputs1 size", output1.size())
         
-        mean_output = torch.mean(output1, dim=1)                # (batch_size x hidden_layer_size)
+        mean_output = torch.mean(output1, dim=0)                # (batch_size, hidden_layer_size)
         #print("mean output size ", mean_output.size())
 
-        output2 = self.W2(mean_output)                          # (batch_size x vocab_size)
+        output2 = self.W2(mean_output)                          # (batch_size, vocab_size)
         #print("outputs2 size", output2.size())
         score_vector = self.log_softmax(output2)
-        #print("score_vector_size", score_vector.size())
+        #print("score_vector_size", score_vector.size())         # (batch_size, vocab_size)
 
         return score_vector
 
@@ -85,8 +85,8 @@ class PredTrain():
                     context.append(self.word2ind[sentence[j]])
 
                 self.context_center_data.append((
-                    torch.tensor(context, dtype=torch.int64),
-                    torch.tensor([self.word2ind[center_word]], dtype=torch.int64)
+                    context,
+                    [self.word2ind[center_word]]
                     ))          
 
         self.trainloader = torch.utils.data.DataLoader(self.context_center_data, shuffle=True, batch_size=self.batch_size)
@@ -116,8 +116,8 @@ class PredTrain():
 
             for data in self.trainloader:
 
-                context_vectors = data[0].to(device)
-                center_vector = data[1].squeeze_().to(device)
+                context_vectors = torch.stack((data[0])).to(device)
+                center_vector = torch.stack((data[1])).squeeze_().to(device)
 
                 outputs = model(context_vectors)
                 loss = loss_function(outputs, center_vector)
