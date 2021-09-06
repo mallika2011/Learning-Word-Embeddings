@@ -13,9 +13,12 @@ import sys
 import ast
 import tqdm
 from frequency_based_training import *
+from prediction_based_training import *
 from vocab import *
 import random
 import numpy as np
+import torch
+import torch.nn as nn
 
 # Defining key global variables
 CORPUS_FILENAME = sys.argv[1]
@@ -35,7 +38,6 @@ def get_sampling_proability(word):
     f = word_count/TOTAL_CORPUS_WORDS
     prob = 1 - np.sqrt(t/f)
     
-    #return random.random() < prob
     return np.random.rand() < prob
     
 
@@ -127,7 +129,7 @@ if __name__=='__main__':
 
         load_corpus()
         word2ind, ind2word, word2count, vocabulary = load_vocabulary()
-        tokenized_corpus = tokenize_corpus(subsample=False)
+        tokenized_corpus = tokenize_corpus(subsample=True)
 
         #train word vectors using the frequency based co-occurence matrix
         window_size = 5
@@ -139,7 +141,21 @@ if __name__=='__main__':
         np.save('./embeddings/freq_word_vectors', np.array(freq_vectors))
 
     elif RUN_TYPE == "2":
-        print("Not implemented yet ...")
+
+        load_corpus()
+        word2ind, ind2word, word2count, vocabulary = load_vocabulary()
+        tokenized_corpus = tokenize_corpus(subsample=True)
+
+        pred_train = PredTrain(tokenized_corpus, word2ind, ind2word, len(vocabulary))
+        pred_train.train_cbow(
+            embedding_size=50, 
+            hidden_layer_size=128, 
+            model_file_path="./models/cbow_model.pt", 
+            embedding_file_path="./embeddings/cbow_embeddings.pt",
+            window_size=2, 
+            num_epochs=1
+            )
+        
 
 
 
