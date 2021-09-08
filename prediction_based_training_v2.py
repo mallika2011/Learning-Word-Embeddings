@@ -13,7 +13,7 @@ from scipy import sparse
 import tqdm
 from sklearn.decomposition import TruncatedSVD
 from sklearn.decomposition import PCA
-from scipy.sparse import csr_matrix
+from scipy.sparse import construct, csr_matrix
 import torch
 import torch.nn as nn
 import torch.utils.data as data_utils
@@ -89,7 +89,7 @@ class PredTrain():
                     context.append(self.word2ind[sentence[j]])
 
                 self.context_center_data.append((
-                    self.generate_one_hot_vectors(context),
+                    context,
                     [self.word2ind[center_word]]
                     ))          
 
@@ -122,7 +122,8 @@ class PredTrain():
 
             for data in tqdm.tqdm(self.trainloader):
                 
-                context_vectors = data[0].to(device)
+                context_vectors = np.array([self.generate_one_hot_vectors(context) for context in data[0]])
+                context_vectors = torch.tensor(context_vectors).permute(1,0,2).to(device)
                 center_vector = torch.stack(data[1]).squeeze_().to(device)
 
                 outputs = model(context_vectors.double())
