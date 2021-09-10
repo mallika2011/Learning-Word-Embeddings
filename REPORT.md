@@ -62,3 +62,11 @@ The top most similar (geometrically closest) words for 5 words - adjectives, nou
 :-------------------------:|:-------------------------:|:-------------------------:
 ![](./images/svd/terrible.png)  |  ![](./images/cbow0.001/terrible.png)  |  ![](./images/gensim/terrible.png)
 ![](./plots/svd_TERRIBLE_custom_model.png)  |  ![](./plots/cbow0.001_TERRIBLE_custom_model.png)  |  ![](./plots/svd_TERRIBLE_gensim_model.png)
+
+## Computational constraints:
+
+* ***Building vocabulary from 1M reviews (instead of 1.6M)***
+
+* ***Training CBOW enc-dec on a smaller sample*** Since the compute time to train 1 epoch of enc-dec CBOW on the entire corpus of 1.6M reviews was nearly 14 hours, to train 20 epochs would take 280 hours which is > 10 days. 10 epochs also would take 140 hours which is ~5 days. Hence the enc-dec CBOW architechture was trained on a smaller subset of 20K reviews. The screenshot of runtime is :
+
+![](./images/cbow_encdec_time.png)
