@@ -13,7 +13,7 @@ import sys
 import ast
 import tqdm
 from frequency_based_training import *
-from prediction_based_training import *
+from prediction_based_training_v2 import *
 from vocab import *
 import random
 import numpy as np
@@ -69,12 +69,11 @@ def tokenize_corpus(subsample):
                     tokenized_sentence.append(word)
             else:
                 tokenized_sentence.append(word)
-        
+
         if tokenized_sentence:
             tokenized_corpus.append(tokenized_sentence)
         else:
             discarded_reviews += 1
-
 
     print("Number of Discarded reviews after subsampling = ", discarded_reviews)
 
@@ -116,6 +115,8 @@ def load_vocabulary():
 
 if __name__=='__main__':
 
+    print("Script started")
+
     if RUN_TYPE == "0":
 
         #load and prepare the corpus (1689188 objects)
@@ -143,17 +144,16 @@ if __name__=='__main__':
 
     elif RUN_TYPE == "2":
 
-        load_corpus()
         word2ind, ind2word, word2count, vocabulary = load_vocabulary()
         with open('vocab_files/tokenized_corpus_with_subsample.txt', 'rb') as f:
            tokenized_corpus = pickle.load(f)
 
-
+        print("Running typ 2")
         pred_train = PredTrain(tokenized_corpus, word2ind, ind2word, len(vocabulary))
         pred_train.train_cbow(
-            embedding_size=50, 
-            hidden_layer_size=128, 
-            model_file_path="./models/cbow_model.pt", 
+            embedding_size=100, 
+            hidden_layer_size=100, 
+            model_file_path="./models/cbow_model_v2.pt", 
             embedding_file_path="./embeddings/cbow_embeddings.pt",
             window_size=5, 
             num_epochs=20

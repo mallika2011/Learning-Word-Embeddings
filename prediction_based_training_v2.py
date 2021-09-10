@@ -17,7 +17,7 @@ from scipy.sparse import construct, csr_matrix
 import torch
 import torch.nn as nn
 import torch.utils.data as data_utils
-
+import random
         
 
 class CBOW(torch.nn.Module):
@@ -40,7 +40,7 @@ class CBOW(torch.nn.Module):
 
         output2 = self.W2(mean_output)                          # (batch_size, vocab_size)
         #print("outputs2 size", output2.size())
-        score_vector = self.log_softmax(output2)
+        score_vector = output2
         #print("score_vector_size", score_vector.size())         # (batch_size, vocab_size)
 
         return score_vector
@@ -49,7 +49,8 @@ class PredTrain():
 
     def __init__(self, tokenized_corpus, word2ind, ind2word, vocab_size) -> None:
         super().__init__()
-        self.tokenized_corpus = tokenized_corpus
+        #self.tokenized_corpus = tokenized_corpus
+        self.tokenized_corpus = random.sample(tokenized_corpus, 20000)
         self.word2ind = word2ind
         self.ind2word = ind2word
         self.vocab_size = vocab_size
@@ -66,6 +67,7 @@ class PredTrain():
     def generate_context_center_data(self, context_size):
 
         self.context_center_data = []
+        print("tokenized_corpus_len = ", len(self.tokenized_corpus))
 
         for sentence in tqdm.tqdm(self.tokenized_corpus):
             for i, center_word in enumerate(sentence):
@@ -75,7 +77,7 @@ class PredTrain():
 
                 if center_word not in self.word2ind: #skip words that occur less than 5 times
                     continue
-                
+
                 context = []
                 #aggregating the context words for a given center word
                 for j in range(max(0,i-context_size), min(len(sentence), i+context_size+1)):
@@ -88,11 +90,15 @@ class PredTrain():
                     
                     context.append(self.word2ind[sentence[j]])
 
-                self.context_center_data.append((
-                    context,
-                    [self.word2ind[center_word]]
+                if len(context) > 0 :
+          
+                    self.context_center_data.append((
+                        context,
+                        [self.word2ind[center_word]]
                     ))          
 
+        print("Total num training samples = ", len(self.context_center_data))
+        print("Batch size = ", self.batch_size)
         self.trainloader = torch.utils.data.DataLoader(self.context_center_data, shuffle=True, batch_size=self.batch_size)
 
     
@@ -107,33 +113,46 @@ class PredTrain():
         model = CBOW(self.vocab_size, embedding_size, hidden_layer_size)
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
         model = model.to(device)
-        model = model.double()
+        #model = model.double()
         
-        loss_function = nn.NLLLoss()
-        optimizer = torch.optim.SGD(model.parameters(), lr=0.95, momentum=0.9)
+        #loss_function = nn.NLLLoss()
+        loss_function = nn.CrossEntropyLoss()
+        #optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
+
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.005, betas=(0.9,0.999), eps=1e-08, weight_decay=0, amsgrad=False)
+        #scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=2, threshold=0.01, threshold_mode='abs', cooldown=10)
 
         best_train_loss = 100000
         print("Beginning Training Now ...")
+        print("Device : ", device)
 
         for epoch in tqdm.tqdm(range(num_epochs)):
             
             train_loss = 0
             train_steps = 0
 
+            #epoch_data = random.sample(self.context_center_data, 200000)
+            #epoch_data = self.context_center_data
+            #print("Epoch train data", len(epoch_data))
+            #self.trainloader = torch.utils.data.DataLoader(epoch_data, shuffle=True, batch_size=self.batch_size)
+
             for data in tqdm.tqdm(self.trainloader):
-                
+
                 context_vectors = np.array([self.generate_one_hot_vectors(context) for context in data[0]])
-                context_vectors = torch.tensor(context_vectors).permute(1,0,2).to(device)
+                context_vectors = torch.tensor(context_vectors).permute(1,0,2).float().to(device)
                 center_vector = torch.stack(data[1]).squeeze_().to(device)
 
-                outputs = model(context_vectors.double())
+                #outputs = model(context_vectors.double())
+                outputs = model(context_vectors.float())
                 loss = loss_function(outputs, center_vector)
                 train_loss += loss.item()
                 train_steps += 1
 
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+            #scheduler.step(train_loss)
             
             train_loss = train_loss / train_steps
             print(f"Train Loss for epoch {epoch} = {train_loss}")
