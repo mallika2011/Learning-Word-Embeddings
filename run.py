@@ -13,7 +13,8 @@ import sys
 import ast
 import tqdm
 from frequency_based_training import *
-from prediction_based_training import *
+from prediction_based_training_nn_based import *
+# from prediction_based_training_encdec_based import *
 from vocab import *
 import random
 import numpy as np
@@ -127,7 +128,6 @@ if __name__=='__main__':
 
     elif RUN_TYPE == "1":
 
-        load_corpus()
         word2ind, ind2word, word2count, vocabulary = load_vocabulary()
         with open('vocab_files/tokenized_corpus_with_subsample.txt', 'rb') as f:
            tokenized_corpus = pickle.load(f)
@@ -143,7 +143,17 @@ if __name__=='__main__':
 
     elif RUN_TYPE == "2":
 
-        load_corpus()
+        '''
+        Parameters to be passed for enc-dec are:
+            embedding_size=100, 
+            hidden_layer_size=100, 
+            model_file_path="./models/cbow_model_v2.pt", 
+            embedding_file_path="./embeddings/cbow_embeddings.pt",
+            window_size=5, 
+            num_epochs=20
+        ''' 
+        
+
         word2ind, ind2word, word2count, vocabulary = load_vocabulary()
         with open('vocab_files/tokenized_corpus_with_subsample.txt', 'rb') as f:
            tokenized_corpus = pickle.load(f)
