@@ -8,7 +8,14 @@ git clone git@github.com:mallika2011/Learning-Word-Embeddings.git
 cd Learning-Word-Embeddings
 ```
 
-2. There are 4 tasks that can be done : create vocabulary, train svd, train cbow, tokenize corpus
+2. Create a virtual env and install requirements
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+3. There are 4 tasks that can be done : create vocabulary, train svd, train cbow, tokenize corpus
   *  To create the vocabulary run the following. This will create the files `word2count.json`, `word2ind.json`, `ind2word.json`, and `vocabulary.txt` in the `vocab_files` directory
      ```bash
      mkdir vocab_files
