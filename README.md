@@ -38,6 +38,12 @@ pip install -r requirements.txt
 
 All vocabulary files and models for the CBOW method are present in the repo. The link to **co-occurrence matrix models** and the **tokenized_corpus** files (with and without sampling) can be found here:
 
+All [Trained Models](https://iiitaphyd-my.sharepoint.com/:f:/g/personal/mallika_subramanian_students_iiit_ac_in/EkuTu1GModVGqqNGgSZSn7YBZdbBb5PYAFI9ISOqaj_QcQ?e=dsjVKn)
+
+All [Vocab Files](https://iiitaphyd-my.sharepoint.com/:f:/g/personal/mallika_subramanian_students_iiit_ac_in/EotbduKdF5ZJtzyaE1qDBbIB8k2vm6QEHeabCno03vZVQg?e=zSeAhw)
+
+All [Embedding Files](https://iiitaphyd-my.sharepoint.com/:f:/g/personal/mallika_subramanian_students_iiit_ac_in/EmvNtqiakSZDiZHA4RW2DgsBZZocp6uv3dLiMX8-pPtQxw?e=d5FIda)
+
 * [Co-occurrence Matrix Models *with* Sampling ](https://iiitaphyd-my.sharepoint.com/:u:/g/personal/mallika_subramanian_students_iiit_ac_in/EaM_OGOuYxFPmZ4RRPohRD4BJ-WzXNM-orOqEMQALrSVFg?e=Kt97yD)
 * [Co-occurrence Matrix Models *without* Sampling ](https://iiitaphyd-my.sharepoint.com/:u:/g/personal/mallika_subramanian_students_iiit_ac_in/ETH9J8GzjI9AisqCipQqJ0cBbWZoEi4vm0Az5phq3vKkWg?e=7oISU2)
 * [Tokenized Corpus *with* sampling](https://iiitaphyd-my.sharepoint.com/:t:/g/personal/mallika_subramanian_students_iiit_ac_in/EbIwH1VpM7pOoTd2-6Og3HEBfyAfYOTtNhSqJ4VBlI_GsA?e=dwfzcM)
