@@ -1,6 +1,8 @@
 '''
 Learning word embeddings using a prediction based approach
-by using the Continuous Bag of Words (CBOW) model
+by using the Continuous Bag of Words (CBOW) model by using the
+pytroch nn.Embedding layer to map the word indices to their
+respective word vector representations. 
 '''
 
 from numpy.core.defchararray import center
